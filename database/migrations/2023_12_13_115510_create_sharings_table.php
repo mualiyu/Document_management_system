@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('sharings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBiginteger('user_id')->unsigned();
+            $table->string('type');
+            $table->string('start_time')->nullable();
+            $table->string('stop_time')->nullable();
+            $table->string('status');
+            $table->string('uuid');
+            $table->longText('description')->nullable();
+            $table->longText('terms')->nullable();
+            $table->longText('n_d_a')->nullable();
             $table->timestamps();
         });
     }

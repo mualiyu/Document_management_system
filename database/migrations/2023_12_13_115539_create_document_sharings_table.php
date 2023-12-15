@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('document_sharings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBiginteger('document_id')->unsigned();
+            $table->unsignedBiginteger('sharing_id')->unsigned();
             $table->timestamps();
         });
     }

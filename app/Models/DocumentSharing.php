@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class DocumentSharing extends Model
 {
     use HasFactory;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'document_id',
+        'sharing_id',
+    ];
 }

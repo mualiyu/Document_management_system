@@ -3,16 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use Faker\Core\Uuid;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class DocumentController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $documents = Document::orderBy('created_at', 'desc')->get();
+
+        return view('documents.index', ["documents"=>$documents]);
     }
 
     /**
@@ -20,7 +35,7 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        //
+        return view('documents.create');
     }
 
     /**
@@ -28,7 +43,40 @@ class DocumentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'file' => 'required',
+            'description' => 'nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
+        if ($request->hasFile("file")) {
+            $fileNameWExt = $request->file("file")->getClientOriginalName();
+            $fileName = pathinfo($fileNameWExt, PATHINFO_FILENAME);
+            $fileExt = $request->file("file")->getClientOriginalExtension();
+            $fileNameToStore = $fileName."_".time().".".$fileExt;
+            $request->file("file")->storeAs("public/Documents", $fileNameToStore);
+
+            $url = url('storage/Documents/'.$fileNameToStore);
+        }else {
+            $url = "";
+        }
+
+        if ($url) {
+            $request['uuid'] = Str::uuid();
+            $request['url'] = $url;
+
+            // return $request->all();
+
+            $document = Document::create($request->all());
+
+            if ($document) {
+                return redirect()->route('documents')->with('status', 'Document is added 👍');
+            }
+        }
     }
 
     /**
@@ -60,6 +108,8 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
-        //
+        $document->delete();
+
+        return redirect()->route('documents');
     }
 }

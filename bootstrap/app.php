@@ -41,6 +41,8 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
+header('Access-Control-Allow-Origin: http://dms.test');
+
 /*
 |--------------------------------------------------------------------------
 | Return The Application
